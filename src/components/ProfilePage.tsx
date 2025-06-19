@@ -5,11 +5,19 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { menuData } from '../data/menuData';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
+interface OrderItem {
+  id: string;
+  name: string;
+  quantity: number;
+  price: number;
+}
+
 interface Order {
   id: string;
-  items: { id: string; name: string; quantity: number; price: number }[];
+  items: OrderItem[];
   total: number;
   timestamp: Date;
+  status: string; // <-- العمود الجديد
 }
 
 const ProfilePage = () => {
@@ -28,8 +36,10 @@ const ProfilePage = () => {
         const ordersList = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-          timestamp: doc.data().timestamp.toDate()
+          timestamp: doc.data().timestamp?.toDate(),
+          status: doc.data().status || 'pending' // <-- جلب الحالة من Firestore
         })) as Order[];
+
         setOrders(ordersList);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -59,6 +69,22 @@ const ProfilePage = () => {
   }
 
   const favoriteItems = menuData.filter(item => favorites.includes(item.id));
+
+  // تحويل الحالة إلى نص عربي
+  const getStatusLabel = (status: string): string => {
+    switch (status) {
+      case 'pending':
+        return 'قيد الانتظار';
+      case 'preparing':
+        return 'جارٍ التجهيز';
+      case 'delivering':
+        return 'في الطريق';
+      case 'delivered':
+        return 'تم التسليم';
+      default:
+        return status;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-orange-50 py-10">
@@ -128,6 +154,7 @@ const ProfilePage = () => {
                     <th className="px-4 py-2 text-left">{t('quantity')}</th>
                     <th className="px-4 py-2 text-left">{t('price')}</th>
                     <th className="px-4 py-2 text-left">{t('total')}</th>
+                    <th className="px-4 py-2 text-left">{t('status')}</th> {/* العمود الجديد */}
                   </tr>
                 </thead>
                 <tbody>
@@ -138,8 +165,8 @@ const ProfilePage = () => {
                         {order.timestamp.toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US')}
                       </td>
                       <td className="border px-4 py-2">
-                        {order.items?.map((item, index) => (
-                          <div key={index}>
+                        {order.items?.map((item, idx) => (
+                          <div key={idx}>
                             <strong>{item.name}</strong> - {item.quantity} x {item.price} AED
                           </div>
                         ))}
@@ -151,6 +178,23 @@ const ProfilePage = () => {
                         {order.items?.reduce((total, item) => total + item.quantity * item.price, 0)} AED
                       </td>
                       <td className="border px-4 py-2">{order.total} AED</td>
+                      <td className="border px-4 py-2">
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-white ${
+                            order.status === 'pending'
+                              ? 'bg-yellow-500'
+                              : order.status === 'preparing'
+                              ? 'bg-blue-500'
+                              : order.status === 'delivering'
+                              ? 'bg-indigo-500'
+                              : order.status === 'delivered'
+                              ? 'bg-green-500'
+                              : 'bg-gray-500'
+                          }`}
+                        >
+                          {getStatusLabel(order.status)}
+                        </span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
