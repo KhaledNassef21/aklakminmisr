@@ -9,8 +9,7 @@ import ContactPage from './components/ContactPage';
 import AuthPage from './components/AuthPage';
 import AdminPage from './components/AdminPage';
 import ProfilePage from './components/ProfilePage';
-
-<Route path="/profile" element={<ProfilePage />} />
+import AdminOrdersPage from './components/AdminOrdersPage'; // ✅ استيراد صفحة إدارة الطلبات
 
 // Contexts
 import { LanguageProvider } from './contexts/LanguageContext';
@@ -19,8 +18,8 @@ import { CartProvider } from './contexts/CartContext';
 // Components
 import Header from './components/Header';
 import Footer from './components/Footer';
-import ScrollToTop from './components/ScrollToTop'; // ⬅️ استيراد المكون الجديد
-import ScrollToTopButton from './components/ScrollToTopButton'; // الزر اللي يظهر بعد السكرول
+import ScrollToTop from './components/ScrollToTop'; // ⬅️ مكون لتحديث الصفحة عند التنقل
+import ScrollToTopButton from './components/ScrollToTopButton'; // الزر الصغير اللي يظهر بعد التمرير لأسفل
 
 function App() {
   return (
@@ -47,8 +46,9 @@ function App() {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/admin" element={<AdminPage />} />
-		<Route path="/profile" element={<ProfilePage />} /> {/* ✔️ هنا مكانها الصحيح */}
+                <Route path="/admin/orders" element={<AdminOrdersPage />} /> {/* ✅ صفحة إدارة الطلبات */}
 
                 {/* صفحة 404 - اختياري */}
                 <Route path="*" element={<Navigate to="/home" />} />
