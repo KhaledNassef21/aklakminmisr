@@ -164,6 +164,14 @@ const AdminPage: React.FC = () => {
     <div className="min-h-screen bg-orange-50 py-10 px-4">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-8">لوحة تحكم الإدارة</h1>
+<div className="text-center mb-6">
+  <a 
+    href="/admin/orders" 
+    className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+  >
+    إدارة الطلبات
+  </a>
+</div>
 
         {/* Cards Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
